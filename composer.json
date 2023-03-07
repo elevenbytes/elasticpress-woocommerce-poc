@@ -1,0 +1,29 @@
+{
+    "name": "deninichi/elbytes-elasticpress-woocommerce-poc",
+    "autoload": {
+        "psr-4": {
+            "Deninichi\\ElbytesElasticpressWoocommercePoc\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "11bytes"
+        }
+    ],
+    "scripts": {
+        "cs": "phpcs --standard=phpcs.ruleset.xml .",
+        "cbf": "phpcbf --standard=phpcs.ruleset.xml ."
+    },
+    "require": {},
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^2.3",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "bjornjohansen/wp-pre-commit-hook": "^0.1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

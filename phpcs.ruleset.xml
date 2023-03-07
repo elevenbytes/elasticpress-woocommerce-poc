@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<ruleset name="CS">
+    <description>A custom set of rules to check for a 11bytes WordPress project</description>
+    <exclude-pattern>\.codeception/*</exclude-pattern>
+    <exclude-pattern>\.github/*</exclude-pattern>
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>node_modues/*</exclude-pattern>
+    <exclude-pattern>\.idea/*</exclude-pattern>
+    <exclude-pattern>assets/*</exclude-pattern>
+
+    <!--
+    Prevent errors caused by WordPress Coding Standards not supporting PHP 8.0+.
+    See https://github.com/WordPress/WordPress-Coding-Standards/issues/2035
+    -->
+    <ini name="error_reporting" value="E_ALL &#38; ~E_DEPRECATED" />
+
+    <arg value="ps"/>
+    <arg name="colors"/>
+    <arg name="parallel" value="100"/>
+    <arg name="extensions" value="php"/>
+    <arg name="cache" value=".phpcs.cache"/>
+
+    <!-- Include the WordPress standard. -->
+    <rule ref="WordPress">
+        <!-- PSR4 -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
+    </rule>
+
+    <config name="testVersion" value="7.0-"/>
+    <rule ref="PHPCompatibility"/>
+
+    <rule ref="Generic.Metrics.CyclomaticComplexity">
+        <properties>
+            <property name="complexity" value="3"/>
+            <property name="absoluteComplexity" value="5"/>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.Metrics.NestingLevel">
+        <properties>
+            <property name="absoluteNestingLevel" value="3"/>
+        </properties>
+    </rule>
+
+    <!-- Allow short array syntax -->
+    <rule ref="Generic.Arrays.DisallowShortArraySyntax.Found">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax.Found"/>
+</ruleset>

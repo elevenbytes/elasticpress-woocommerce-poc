@@ -47,22 +47,21 @@ class EP_Woo_WP_Taxonomy
 		}
 	}
 
-	/**
-	 * Update terms count.
-	 */
 	public static function elbytes_update_terms_count() {
-		$taxonomies        = [ 'product_cat', 'product_tag' ];
+		$taxonomies        = array('product_cat','product_tag');
 		$wc_product_terms  = [];
 		$product_terms_ids = [];
 
-		foreach( $taxonomies as $taxonomy ) {
-			$terms = get_terms([
-				'taxonomy'   => $taxonomy,
-				'hide_empty' => false,
-			]);
+		foreach ( $taxonomies as $taxonomy ) {
+			$terms = get_terms(
+				[
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => false,
+				]
+			);
 
-			if( $terms && ! is_wp_error( $terms ) ) {
-				if( defined('WP_DEBUG' ) && WP_DEBUG ) {
+			if ( $terms && ! is_wp_error( $terms ) ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 					error_log( 'Updating terms count for taxonomy: ' . $taxonomy );
 					error_log( 'Terms: ' . count( $terms ) );
 				}

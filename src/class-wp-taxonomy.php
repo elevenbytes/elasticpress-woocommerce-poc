@@ -8,47 +8,53 @@
 /**
  * Class related for WP taxonomy customizations.
  */
-class EP_Woo_WP_Taxonomy
-{
+class EP_Woo_WP_Taxonomy {
     /**
      * Class constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         // Remove products per term count calculation on frontend.
-        if( ! is_admin() || wp_doing_ajax() ) {
+        if ( ! is_admin() || wp_doing_ajax() ) {
             remove_filter( 'get_terms', 'wc_change_term_counts', 10, 2 );
         }
 
-		if( ! wp_doing_cron() ) {
+		if ( ! wp_doing_cron() ) {
 			remove_action( 'transition_post_status', '_update_term_count_on_transition_post_status' );
 
 			add_filter( 'woocommerce_product_recount_terms', '__return_false' );
 			add_action( 'transition_post_status', [ $this, 'maybe_update_term_count_on_transition_post_status' ], 10, 3 );
 		}
+
+		// TODO: hot fix! show empty taxonomy terms.
+	    add_filter( 'ep_facet_search_get_terms_args', [ $this, 'ep_facet_search_get_terms_args_update' ], 10, 3 );
     }
 
 	/**
 	 * Update terms count on transition post status.
 	 *
-	 * @param string   $new_status New post status.
-	 * @param string   $old_status Old post status.
-	 * @param WP_Post  $post       Post object.
+	 * @param string  $new_status New post status.
+	 * @param string  $old_status Old post status.
+	 * @param WP_Post $post       Post object.
 	 */
 	public function maybe_update_term_count_on_transition_post_status( string $new_status, string $old_status, WP_Post $post ) {
-		if( $post->post_type === 'product' ) {
+		if ( $post->post_type === 'product' ) {
 			return false;
 		}
 
 		// Update counts for the post's terms if not woocommerce product.
 		foreach ( (array) get_object_taxonomies( $post->post_type ) as $taxonomy ) {
-			$tt_ids = wp_get_object_terms( $post->ID, $taxonomy, array( 'fields' => 'tt_ids' ) );
+			$tt_ids = wp_get_object_terms( $post->ID, $taxonomy, [ 'fields' => 'tt_ids' ] );
 			wp_update_term_count( $tt_ids, $taxonomy );
 		}
 	}
 
+	/**
+	 * Update term count meta.
+	 *
+	 * @return void
+	 */
 	public static function elbytes_update_terms_count() {
-		$taxonomies        = array('product_cat','product_tag');
+		$taxonomies        = [ 'product_cat', 'product_tag' ];
 		$wc_product_terms  = [];
 		$product_terms_ids = [];
 
@@ -75,9 +81,23 @@ class EP_Woo_WP_Taxonomy
 				// Update woocommerce related term count.
 				_wc_term_recount( $wc_product_terms, get_taxonomy( $taxonomy ), false, false );
 
-				// Update wordpress related term count.
+				// Update WordPress related term count.
 				wp_update_term_count( $product_terms_ids, $taxonomy );
 			}
 		}
+	}
+
+	/**
+	 * Show empty taxonomy terms in ElasticPress facet search.
+	 *
+	 * @param $params
+	 * @param $args
+	 * @param $instance
+	 *
+	 * @return mixed
+	 */
+	public function ep_facet_search_get_terms_args_update( $params, $args, $instance ) {
+		$params['hide_empty'] = false;
+		return $params;
 	}
 }
